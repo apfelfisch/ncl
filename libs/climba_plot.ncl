@@ -1,9 +1,16 @@
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
+load "/usr/share/ncarg/nclscripts/csm/gsn_code.ncl"
+load "/usr/share/ncarg/nclscripts/csm/gsn_csm.ncl"
+load "/usr/share/ncarg/nclscripts/csm/contributed.ncl"
+load "/usr/share/ncarg/nclscripts/csm/shea_util.ncl"
 
-load "/Users/tbruecher/Documents/scripts/plot/ncl/libs/climba_calc.ncl"
+load "/scratch/local1/tbruecher/git/ncl/libs/climba_calc.ncl"
+
+;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
+;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
+;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
+;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
+
+;load "/Users/tbruecher/Documents/scripts/plot/ncl/libs/climba_calc.ncl"
 
 
 
@@ -1721,8 +1728,10 @@ begin
    ;gsn_draw_colormap(wks_covers)
 
    plot=new(11,graphic)
-   resgreen@cnLevels = (/0.001,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5/)
-   resgreen@cnFillColors = ispan(26,37,1)
+   ;resgreen@cnLevels = (/0.001,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.5,0.45,0.5/)
+   resgreen@cnlevels = (/0.05, 0.1, 0.2,0.3, 0.4,0.5, 0.6,0.7, 0.8,0.9/)
+   ;resgreen@cnFillColors = ispan(26,37,1)
+   resgreen@cnFillColors = (/51, 28,29,30,31,32,33,34,35,36,37/) ;;ispan(27,37,1)
    resgreen@gsnRightString= "[ ]"
    resdes@cnLevels = (/0.001,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5/)
    resdes@cnFillColors = ispan(51,62,1)

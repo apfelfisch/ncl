@@ -1,10 +1,16 @@
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
+load "/usr/share/ncarg/nclscripts/csm/gsn_code.ncl"
+load "/usr/share/ncarg/nclscripts/csm/gsn_csm.ncl"
+load "/usr/share/ncarg/nclscripts/csm/contributed.ncl"
+load "/usr/share/ncarg/nclscripts/csm/shea_util.ncl"
 
 
-LIBPATH="/Users/tbruecher/Documents/scripts/plot/ncl/libs/"
+;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
+;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
+;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
+;load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
+
+LIBPATH="/scratch/local1/tbruecher/git/ncl/libs/"
+;LIBPATH="/Users/tbruecher/Documents/scripts/plot/ncl/libs/"
 
 
 ; constants
@@ -2737,6 +2743,10 @@ begin
       opt@lat2=data->lat(nlat-1)
    end if
 
+   if ( .not. (isatt(opt,"full"))) then
+	opt@full=False
+   end if
+
 
    print(opt@lon1+" "+opt@lon2+" "+opt@lat1+" "+opt@lat2)
 
@@ -2809,10 +2819,11 @@ begin
    ;total land
    coverfraction(:,11,:,:)=1.-veg_ratio_max+veg_ratio_max*dim_sum_n_Wrap(cover_fract(:,0:10,:,:),1)
 
+   print("get covers done")
+
    if (opt@full .eq. True) then
      return coverfraction
-
-   else
+   else 
       return dim_avg_n_Wrap(coverfraction,0)
    end if
 
