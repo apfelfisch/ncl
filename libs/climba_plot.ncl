@@ -1786,6 +1786,73 @@ end
 
 
 
+undef ("plot_coverfraction_abs_selection")
+procedure plot_coverfraction_abs (covers:float,records:integer,colorcode:string,headers:string,wkstype:string,year:string,output:string,paneltitle:string,lbside:string,region:string)
+local  wks_type
+begin
+   ; general settings for all plots
+   wks_type              = wkstype
+   gsnMaximize           = True
+   resgreen=True
+   opt=True
+   opt@lbside=lbside
+   opt@region=region
+   opt@landonly=True
+
+   opt@lon1=0.
+   opt@lon2=360.
+   opt@lat1=30.
+   opt@lat2=90.
+
+   resgreen=set_plot_settings(opt)
+   resdes=resgreen
+   wks_covers            = gsn_open_wks(wks_type,output)
+   cmap=def_colormap
+   gsn_define_colormap(wks_covers,cmap)
+   ;gsn_draw_colormap(wks_covers)
+
+   nplot=size(covers)+1
+   print, "plotting" & nplot & " covers"
+
+
+
+   plot=new(nplot,graphic)
+   ;resgreen@cnLevels = (/0.001,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.5,0.45,0.5/)
+   resgreen@cnlevels = (/0.05, 0.1, 0.2,0.3, 0.4,0.5, 0.6,0.7, 0.8,0.9/)
+   ;resgreen@cnFillColors = ispan(26,37,1)
+   resgreen@cnFillColors = (/51, 28,29,30,31,32,33,34,35,36,37/) ;;ispan(27,37,1)
+   resgreen@gsnRightString= "[ ]"
+   resdes@cnLevels = (/0.001,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5/)
+   resdes@cnFillColors = ispan(51,62,1)
+   resdes@gsnRightString= "[ ]"
+
+
+    for iplot = 0, nplot-1
+        res=true
+
+        if ( colorcode.eq."d" ) then
+            res=resdes
+        else
+            res=resgreen
+        end if
+        res@gsnLeftString = headers(iplot)+" " + year+" [ ]"
+        plot(iplot) = gsn_csm_contour_map(wks_covers,covers(0,:,:),resdes)
+        delete(res)
+    done
+
+
+
+   ;plotting the five figures as a panel
+   resP=True
+   resP=set_panel_settings(resP,paneltitle,year,resdes@gsnRightString)
+
+   gsn_panel(wks_covers,plot(0:4),(/1,2,2/),resP)
+   gsn_panel(wks_covers,plot(5:10),(/2,2,2/),resP)
+end
+
+
+
+
 undef ("plot_coverfraction_abs_martin")
 procedure plot_coverfraction_abs_martin (covers:float,wkstype:string,year:string,output:string,paneltitle:string,lbside:string,region:string)
 local  wks_type
