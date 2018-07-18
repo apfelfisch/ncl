@@ -1786,8 +1786,9 @@ end
 
 
 
-undef ("plot_coverfraction_abs_selection")
-procedure plot_coverfraction_abs (covers:float,records:integer,colorcode:string,headers:string,wkstype:string,year:string,output:string,paneltitle:string,lbside:string,region:string)
+undef ("plot_coverfraction_selection")
+procedure plot_coverfraction_selection (covers:float,records:integer,colorcode:string,headers:string,\
+                                        wkstype:string,year:string,output:string,paneltitle:string,lbside:string,region:string)
 local  wks_type
 begin
    ; general settings for all plots
@@ -1806,39 +1807,68 @@ begin
 
    resgreen=set_plot_settings(opt)
    resdes=resgreen
+
+   resdesdiff=resgreen
+   resgreendiff=resgreen
+
+
    wks_covers            = gsn_open_wks(wks_type,output)
    cmap=def_colormap
    gsn_define_colormap(wks_covers,cmap)
    ;gsn_draw_colormap(wks_covers)
 
-   nplot=size(covers)+1
-   print, "plotting" & nplot & " covers"
+   nplot=dimsizes(records)
+   print (dimsizes(records))
+   print ("plotting " + nplot + " covers")
+
 
 
 
    plot=new(nplot,graphic)
    ;resgreen@cnLevels = (/0.001,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.5,0.45,0.5/)
-   resgreen@cnlevels = (/0.05, 0.1, 0.2,0.3, 0.4,0.5, 0.6,0.7, 0.8,0.9/)
    ;resgreen@cnFillColors = ispan(26,37,1)
-   resgreen@cnFillColors = (/51, 28,29,30,31,32,33,34,35,36,37/) ;;ispan(27,37,1)
+   resgreen@cnlevels = (/0.05, 0.1, 0.2,0.3, 0.4,0.5, 0.6,0.7, 0.8,0.9/)
+   resgreen@cnFillColors = (/51, 28,29,30,31,32,33,34,35,36,37/) 
    resgreen@gsnRightString= "[ ]"
-   resdes@cnLevels = (/0.001,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5/)
+
+   resdes@cnLevels = (/0.1, 0.2,0.3, 0.4,0.5, 0.6,0.7, 0.8,0.9,0.95/)
    resdes@cnFillColors = ispan(51,62,1)
    resdes@gsnRightString= "[ ]"
 
+   resgreendiff@cnLevels = (/-0.3,-0.25,-0.20,-0.15,-0.10,-0.05,0.05,0.1,0.15,0.20,0.25,0.30/)
+   resgreendiff@cnFillColors = ispan(38,50,1)
+   resgreendiff@gsnRightString= "[ ]"
+ 
+   resdesdiff@cnLevels = (/-0.3,-0.25,-0.20,-0.15,-0.10,-0.05,0.05,0.1,0.15,0.20,0.25,0.30/)
+   resdesdiff@cnFillColors = ispan(63,75,1)
+   resdesdiff@gsnRightString= "[ ]"
 
-    for iplot = 0, nplot-1
-        res=true
 
-        if ( colorcode.eq."d" ) then
+
+   ;printVarSummary(colorcode)
+    do iplot = 0, nplot-1
+;        res=True
+        print (colorcode(iplot))
+        if ( colorcode(iplot) .eq. "b" ) then
             res=resdes
-        else
+        else if ( colorcode(iplot) .eq. "bd" ) then
+            res=resdesdiff    
+        else if (colorcode(iplot) .eq. "g" ) then
             res=resgreen
+        else if (colorcode(iplot) .eq. "gd" ) then
+            res=resgreendiff
+        else
+            print ("colorcode not known")
+            exit
         end if
+        end if 
+        end if 
+        end if
+        
         res@gsnLeftString = headers(iplot)+" " + year+" [ ]"
-        plot(iplot) = gsn_csm_contour_map(wks_covers,covers(0,:,:),resdes)
+        plot(iplot) = gsn_csm_contour_map(wks_covers,covers(records(iplot),:,:),res)
         delete(res)
-    done
+    end do
 
 
 
@@ -1846,8 +1876,8 @@ begin
    resP=True
    resP=set_panel_settings(resP,paneltitle,year,resdes@gsnRightString)
 
-   gsn_panel(wks_covers,plot(0:4),(/1,2,2/),resP)
-   gsn_panel(wks_covers,plot(5:10),(/2,2,2/),resP)
+   gsn_panel(wks_covers,plot(0:nplot-1),(/2,2,2/),resP)
+   ;gsn_panel(wks_covers,plot(5:10),(/2,2,2/),resP)
 end
 
 
@@ -2001,6 +2031,79 @@ begin
    gsn_panel(wks_covers,plot(0:4),(/1,2,2/),resP)
    gsn_panel(wks_covers,plot(5:9),(/1,2,2/),resP)
 end
+
+
+undef ("plot_coverfraction_diff_selection")
+procedure plot_coverfraction_diff_selection (covers:float,wkstype:string,year:string,output:string,paneltitle:string,lbside:string,region:string)
+local  wks_type
+begin
+   ; general settings for all plots
+   wks_type              = wkstype
+   gsnMaximize           = True
+   resgreen=True
+   opt=True
+   opt@lbside=lbside
+   opt@region=region
+   opt@landonly=True
+   resgreen=set_plot_settings(opt)
+   resdes=resgreen
+   wks_covers            = gsn_open_wks(wks_type,output)
+   cmap=def_colormap
+
+   gsn_define_colormap(wks_covers,cmap)
+   ;gsn_draw_colormap(wks_covers)
+
+   plot=new(10,graphic)
+   resgreen@cnLevels = (/-0.3,-0.25,-0.20,-0.15,-0.10,-0.05,0.05,0.1,0.15,0.20,0.25,0.30/)
+   resgreen@cnFillColors = ispan(38,50,1)
+   resgreen@gsnRightString= "[ ]"
+   resdes@cnLevels = (/-0.3,-0.25,-0.20,-0.15,-0.10,-0.05,0.05,0.1,0.15,0.20,0.25,0.30/)
+   resdes@cnFillColors = ispan(63,75,1)
+   resdes@gsnRightString= "[ ]"
+
+
+   ; plotten of absolute values for carbon pools
+   ; desert fraction
+   resdes@gsnLeftString = "desert fraction: "+year+" [ ]"
+   plot(0) = gsn_csm_contour_map(wks_covers,covers(0,:,:),resdes)
+   ; woody
+   resgreen@gsnLeftString = "woody fraction: "+year+" [ ]"
+   plot(1) = gsn_csm_contour_map(wks_covers,covers(1,:,:),resgreen)
+   ; green
+   resgreen@gsnLeftString = "tree fraction: "+year+" [ ]"
+   plot(2) = gsn_csm_contour_map(wks_covers,covers(2,:,:),resgreen)
+   ; shrubs
+   resgreen@gsnLeftString = "shrubs fraction: "+year+" [ ]"
+   plot(3) = gsn_csm_contour_map(wks_covers,covers(3,:,:),resgreen)
+   ; grass
+   resgreen@gsnLeftString = "grass fraction: "+year+" [ ]"
+   plot(4) = gsn_csm_contour_map(wks_covers,covers(4,:,:),resgreen)
+
+   ; c3+c4pasture
+   resgreen@gsnLeftString = "c3+c4pasture: "+year+" [ ]"
+   plot(5) = gsn_csm_contour_map(wks_covers,covers(5,:,:),resgreen)
+   ; c3 pasture
+   resgreen@gsnLeftString = "c3 pasture: "+year+" [ ]"
+   plot(6) = gsn_csm_contour_map(wks_covers,covers(6,:,:),resgreen)
+   ; c4 pasture
+   resgreen@gsnLeftString = "c4 pasture: "+year+" [ ]"
+   plot(7) = gsn_csm_contour_map(wks_covers,covers(7,:,:),resgreen)
+   ; crops
+   resgreen@gsnLeftString = "crops: "+year+" [ ]"
+   plot(8) = gsn_csm_contour_map(wks_covers,covers(8,:,:),resgreen)
+   ; managed
+   resgreen@gsnLeftString = "crops+pasture: "+year+" [ ]"
+   plot(9) = gsn_csm_contour_map(wks_covers,covers(9,:,:),resgreen)
+
+
+   ;plotting the five figures as a panel
+   resP=True
+   resP=set_panel_settings(resP,paneltitle,year,resdes@gsnRightString)
+
+   gsn_panel(wks_covers,plot(0:4),(/1,2,2/),resP)
+   gsn_panel(wks_covers,plot(5:9),(/1,2,2/),resP)
+end
+
 
 
 

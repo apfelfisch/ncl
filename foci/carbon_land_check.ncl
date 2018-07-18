@@ -8,6 +8,8 @@ load "/scratch/local1/tbruecher/git/ncl/libs/climba_plot.ncl"
 begin
  
 
+
+
 ; constants
 MyFillValue=-9e+33
 
@@ -30,18 +32,30 @@ forestfile=addfile(data@fnforestfrac,"r")
 forestfrac=forestfile->treeFrac
 
 baresoilfile=addfile(data@fnbaresoil,"r")
-barefrac=baresoilfile->baresoilFrac
+baresoilfrac=baresoilfile->baresoilFrac
 
-printVarSummary (barefrac)
-printVarSummary (forestfrac)
+;printVarSummary (barefrac)
+;printVarSummary (forestfrac)
 
-printVarSummary (covers)
+;printVarSummary (covers)
 
-exit
 
-plot_coverfraction_abs (covers, "pdf","foci_cover.pdf","2000-2010", "coverfraction in foci", "left", "global")
+plot_coverfraction_abs (covers, "pdf","foci_cover_all.pdf","2000-2010", "coverfraction in foci", "left", "global")
 
-printVarSummary (covers)
+
+covers(2,:,:)=baresoilfrac/100.
+covers(3,:,:)=forestfrac/100.
+
+covers(4,:,:)=covers(0,:,:)-covers(2,:,:)
+covers(5,:,:)=covers(1,:,:)-covers(3,:,:)
+
+
+
+
+plot_coverfraction_selection (covers, (/0,1,2,3,4,5/),(/"b","g","b","g","bd","gd"/),\
+                              (/"foci baresoil frac","foci forest frac","data baresoil frac","data forest frac", "data baresoil diff", "data forest diff"/),\
+                              "pdf","foci_cover_validation","2000-2010_vali", "coverfraction in foci", "left", "global")
+
 
 end
 
